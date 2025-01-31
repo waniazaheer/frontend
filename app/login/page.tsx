@@ -117,7 +117,7 @@ const Login = () => {
         <p className="text-center mt-4">
           New here?{" "}
           <button
-            onClick={() => router.push("/Register")}
+            onClick={() => router.push("/register")}
             className="text-red-500 hover:underline"
           >
             Sign Up
