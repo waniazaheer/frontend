@@ -5,32 +5,39 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
+
 const Login = () => {
   const [user, setUser] = useState({ Email: "", Password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
   useEffect(() => {
     const checkUserLoggedIn = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:5000/login", {
+          const response = await axios.get(`${API_URL}/auth/validate`, {
             headers: { Authorization: `Bearer ${token}` },
           });
+
           if (response.data.valid) {
             router.replace("/dashbord");
           }
         } catch (err) {
-          console.error(err);
+          console.error("Token validation failed:", err);
           localStorage.clear();
         }
       }
     };
+
     checkUserLoggedIn();
   }, [router]);
+
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
+
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -38,33 +45,29 @@ const Login = () => {
       toast.error("Please enter email and password");
       return;
     }
+
     try {
-      const response = await axios.post("http://localhost:5000/login", user);
-      console.log('response', response)
+      console.log("API_URL:", API_URL);
+      const response = await axios.post(`${API_URL}/login`, user);
+      console.log("Login response:", response);
+
       const { success, token, userData } = response.data;
       if (success) {
         toast.success("User Logged in Successfully");
-        localStorage.setItem("isUserLoggedIn", JSON.stringify(true)); // Convert the boolean to a string
+        localStorage.setItem("isUserLoggedIn", JSON.stringify(true));
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("token", token);
-        
+
         if (userData.role === "admin") {
-          console.log('userData.role', userData.role)
-         router.push("/dashbord");
+          router.push("/dashbord");
         } else {
-           router.push("/");
+          router.push("/");
         }
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.msg || "An error occurred");
-      } else if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred");
-      }
+      console.error("Login error:", error);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-lightgrey text-black">
@@ -127,4 +130,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;

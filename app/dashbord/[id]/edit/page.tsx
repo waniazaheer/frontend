@@ -5,6 +5,7 @@ import axios from "axios";
 
 const UpdateJob = () => {
     const router = useRouter();
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
     const { id } = useParams();
 
     const [jobData, setJobData] = useState({
@@ -33,7 +34,7 @@ const UpdateJob = () => {
                     return;
                 }
 
-                const response = await axios.get(`http://localhost:5000/getSinglejobs/${id}`, {
+                const response = await axios.get(`${API_URL}/getSinglejobs/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -58,7 +59,7 @@ const UpdateJob = () => {
                 return;
             }
 
-            const response = await axios.patch(`http://localhost:5000/updatejobs/${id}`, jobData, {
+            const response = await axios.patch(`${API_URL}/updatejobs/${id}`, jobData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

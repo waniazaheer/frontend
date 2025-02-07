@@ -25,6 +25,7 @@ export default function Dashboard() {
   const [totalPages, setTotalPages] = useState(1);
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null);
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     fetchJobs(currentPage);
@@ -33,7 +34,7 @@ export default function Dashboard() {
   const fetchJobs = async (page: number) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/getjobs?page=${page}&limit=5`, {
+      const response = await axios.get(`${API_URL}/getjobs?page=${page}&limit=5`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobs(response.data.jobs);
@@ -48,7 +49,7 @@ export default function Dashboard() {
     if (!deleteJobId) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/deletejobs/${deleteJobId}`, {
+      await axios.delete(`${API_URL}/deletejobs/${deleteJobId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Job deleted successfully.");
