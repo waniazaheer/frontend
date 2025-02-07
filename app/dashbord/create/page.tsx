@@ -18,8 +18,9 @@ const CreateJob = () => {
   });
 
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  // Handle input changes
+
   const changeHandler = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -40,8 +41,7 @@ const CreateJob = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/jobs",
+      const response = await axios.post(`${API_URL}/api/jobs`,
         job,
         {
           headers: {

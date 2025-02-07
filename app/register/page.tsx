@@ -1,10 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
+
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
+import axios, { AxiosError } from 'axios';
+
 
 const Register = () => {
   const [user, setUser] = useState({
@@ -19,37 +21,39 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
-
+  
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    
     try {
       if (user.Password !== user.confirmPassword) {
         toast.error("Passwords do not match");
         return;
       }
-
-      await axios.post('http://localhost:5000/register', {
+  
+      await axios.post(`${API_URL}/register`, {
         Name: user.Name,
         Email: user.Email,
         Phone_num: user.Phone_num,
         Password: user.Password,
         image: user.image,
       });
-      
-
+  
       toast.success('User Registered Successfully');
       router.push('/login');
-    } catch (error: any) {
-      toast.error(error.response?.data?.msg || "An error occurred");
+    } catch (error) {
+      const err = error as AxiosError<{ msg?: string }>; 
+      toast.error(err.response?.data?.msg || "An error occurred");
     }
+    
   };
-
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-lightgrey text-black">
       <ToastContainer />
